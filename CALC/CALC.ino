@@ -5,6 +5,7 @@ LiquidCrystal_I2C lcd(0x27,16,2);  // set the LCD address to 0x27 for a 16 chars
 #define VER  1.0f 
 #define val_cnt 4 
 
+const int buz = 4;
 int chk_init = 0;
 int val, val2 = 0;
 int key_val = 0;
@@ -57,6 +58,11 @@ void setup()
         pinMode(pinCols[j], OUTPUT);
         digitalWrite(pinCols[j], HIGH);
     } // set initial output as HIGH
+
+    // initialize buzzer pins as OUTPUT
+    pinMode(buz, OUTPUT);
+    // set initial output as LOW
+    digitalWrite(buz, LOW);
     delay(200);
 }
 
@@ -72,6 +78,12 @@ void clear_init()
     cal_end = 0;
 }
 
+void beep()
+{
+  digitalWrite(buz, HIGH);
+  delay(200);
+  digitalWrite(buz, LOW);
+}
 void loop()
 {
     // Check input
@@ -117,7 +129,7 @@ void loop()
                     time = millis();
                   
                     if(!digit4_sum_1) val=0;
-                                      
+                    beep();                  
                     switch(key_val)
                     {
                         case 0 ... 9:
@@ -191,8 +203,15 @@ void loop()
                                     lcd.print(digit4_total);
                                     break;
                                 case 4:
-                                    digit4_sum_2 == 0 ? lcd.print("Invalid") : digit4_total = (float)digit4_sum_1 / (float)digit4_sum_2;
-                                    lcd.print(digit4_total);
+                                    if (digit4_sum_2 == 0)
+                                    {
+                                      lcd.print("Invalid");
+                                    }
+                                    else
+                                    {
+                                      digit4_total = (float)digit4_sum_1 / (float)digit4_sum_2;
+                                      lcd.print(digit4_total);
+                                    }    
                                     break;
                           }
                     }
